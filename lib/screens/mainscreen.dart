@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stock_tracker/screens/login.dart';
 import 'stockhandling.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -12,6 +13,7 @@ class _MainScreenState extends State<MainScreen> {
   final User? user = FirebaseAuth.instance.currentUser;
   final TextEditingController search = TextEditingController();
 
+  String? stocksymbol;
   String? stockprice;
   String? error;
 
@@ -26,12 +28,36 @@ class _MainScreenState extends State<MainScreen> {
     try {
       final price = await getprice(symbol);
       setState(() {
+        stocksymbol = symbol;
         stockprice = price != null ? "\$$price" : "Not Found";
       });
     } catch (e) {
       setState(() {
         error = "API Handling Error";
       });
+    }
+  }
+
+  void addtowatchlist() async {
+    if (stocksymbol != null && stockprice != null) {
+      try {
+        final uid = user!.uid;
+        final docRef = FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .collection('watchlist')
+            .doc(stocksymbol);
+
+        await docRef.set({'symbol': stocksymbol, 'price': stockprice});
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Added $stocksymbol to favorites")),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Cannot add stock to favorites")),
+        );
+      }
     }
   }
 
@@ -101,9 +127,22 @@ class _MainScreenState extends State<MainScreen> {
             if (error != null)
               Text(error!, style: TextStyle(color: Colors.red)),
             if (stockprice != null)
-              Text(
-                "Current Price: $stockprice",
-                style: TextStyle(fontSize: 20),
+              Card(
+                margin: EdgeInsets.symmetric(vertical: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ListTile(
+                  title: Text(
+                    stocksymbol!,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(stockprice!, style: TextStyle(fontSize: 15)),
+                  trailing: IconButton(
+                    onPressed: addtowatchlist,
+                    icon: Icon(Icons.add, color: Colors.green),
+                  ),
+                ),
               ),
           ],
         ),
