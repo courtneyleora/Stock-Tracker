@@ -32,28 +32,42 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Login")),
+      appBar: AppBar(
+        title: Text(
+          "Stock Tracker App 📈",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.lightGreen[300],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              Text("Sign in with Email and Password"),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
                 validator:
                     (value) => (value?.isEmpty ?? true) ? 'Enter email' : null,
               ),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                ),
                 validator:
                     (value) =>
                         (value?.isEmpty ?? true) ? 'Enter password' : null,
                 obscureText: true,
               ),
+              SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) _signIn();
@@ -67,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 )
               else if (!_success && _userEmail.isNotEmpty)
                 Text("Login failed", style: TextStyle(color: Colors.red)),
+              SizedBox(height: 10),
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, '/register'),
                 child: Text("Don't have an account? Register"),

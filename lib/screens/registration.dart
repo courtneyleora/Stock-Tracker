@@ -49,42 +49,63 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Register")),
+      appBar: AppBar(
+        title: Text(
+          "Create a New Account",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.lightGreen[300],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              Text("Register with Email and Password"),
+              TextFormField(
+                controller: firstname,
+                decoration: InputDecoration(
+                  labelText: 'First Name',
+                  border: OutlineInputBorder(),
+                ),
+                validator:
+                    (value) =>
+                        (value?.isEmpty ?? true) ? 'Enter first name' : null,
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: lastname,
+                decoration: InputDecoration(
+                  labelText: 'Last Name',
+                  border: OutlineInputBorder(),
+                ),
+                validator:
+                    (value) =>
+                        (value?.isEmpty ?? true) ? 'Enter last name' : null,
+              ),
+              SizedBox(height: 10),
               TextFormField(
                 controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
                 validator:
                     (value) => (value?.isEmpty ?? true) ? 'Enter email' : null,
               ),
+              SizedBox(height: 10),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                ),
                 validator:
                     (value) =>
                         (value?.isEmpty ?? true) ? 'Enter password' : null,
                 obscureText: true,
               ),
-              TextFormField(
-                controller: firstname,
-                decoration: InputDecoration(labelText: 'First Name'),
-                validator:
-                    (value) =>
-                        (value?.isEmpty ?? true) ? 'Enter first name' : null,
-              ),
-              TextFormField(
-                controller: lastname,
-                decoration: InputDecoration(labelText: 'Last Name'),
-                validator:
-                    (value) =>
-                        (value?.isEmpty ?? true) ? 'Enter last name' : null,
-              ),
+              SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) _register();

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'login.dart';
-import 'registration.dart';
+import 'screens/login.dart';
+import 'screens/registration.dart';
+import 'screens/mainscreen.dart';
 
-//Skyler and Courtney
-//stock tracker
+//Skyler and Courtney Stock Tracker
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +18,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Firebase Auth Demo',
+      title: 'Stock Tracker ',
+      theme: ThemeData(scaffoldBackgroundColor: Colors.lightGreen[100]),
       home: LoginScreen(),
       routes: {
         '/login': (context) => LoginScreen(),

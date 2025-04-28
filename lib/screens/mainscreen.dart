@@ -10,7 +10,11 @@ class MainScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Welcome, $displayName!", style: TextStyle(fontSize: 20)),
+        backgroundColor: Colors.lightGreen[300],
+        title: Text(
+          "Welcome, $displayName!",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
