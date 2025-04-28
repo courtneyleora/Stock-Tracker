@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 //Skyler and Courtney
+//stock tracker
 void main() {
   runApp(const MyApp());
 }
