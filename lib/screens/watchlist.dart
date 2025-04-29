@@ -5,6 +5,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 class WatchlistScreen extends StatelessWidget {
   final User? user = FirebaseAuth.instance.currentUser;
 
+  void deletefavorite(String docId) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .collection('watchlist')
+        .doc(docId)
+        .delete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +51,12 @@ class WatchlistScreen extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
                   subtitle: Text(price, style: TextStyle(fontSize: 15)),
+                  trailing: IconButton(
+                    onPressed: () {
+                      deletefavorite(docs[index].id);
+                    },
+                    icon: Icon(Icons.delete),
+                  ),
                 ),
               );
             },
