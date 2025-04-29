@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stock_tracker/screens/login.dart';
 import 'stockhandling.dart';
+import 'watchlist.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainScreen extends StatefulWidget {
@@ -85,7 +86,9 @@ class _MainScreenState extends State<MainScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => WatchlistScreen(),
+                        ),
                       );
                     },
                     child: Text("Watchlist"),
