@@ -1,9 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
 
-class WatchlistScreen extends StatelessWidget {
+import 'package:stock_tracker/screens/stockhandling.dart';
+
+class WatchlistScreen extends StatefulWidget {
+  @override
+  _WatchlistScreenState createState() => _WatchlistScreenState();
+}
+
+class _WatchlistScreenState extends State<WatchlistScreen> {
   final User? user = FirebaseAuth.instance.currentUser;
+  Timer? updatetimer;
+
+  @override
+  void initState() {
+    super.initState();
+    startupdate();
+  }
+
+  void startupdate() {
+    updatetimer = Timer.periodic(Duration(minutes: 1), (timer) {
+      updatefavorites();
+    });
+  }
+
+  Future<void> updatefavorites() async {
+    final snapshot =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .collection('watchlist')
+            .get();
+
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+      final symbol = data['symbol'];
+
+      final newprice = await getprice(symbol);
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .collection('watchlist')
+          .doc(doc.id)
+          .update({'price': newprice});
+    }
+  }
+
+  @override
+  void dispose() {
+    updatetimer?.cancel();
+    super.dispose();
+  }
 
   void deletefavorite(String docId) {
     FirebaseFirestore.instance
@@ -38,7 +88,9 @@ class WatchlistScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final data = docs[index].data() as Map<String, dynamic>;
               final symbol = data['symbol'];
-              final price = data['price'];
+              final rawPrice = data['price'];
+              final priceStr = rawPrice.toString().replaceAll('\$', '');
+              final priceNum = double.tryParse(priceStr) ?? 0.0;
 
               return Card(
                 margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -50,7 +102,10 @@ class WatchlistScreen extends StatelessWidget {
                     symbol,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
-                  subtitle: Text(price, style: TextStyle(fontSize: 15)),
+                  subtitle: Text(
+                    "\$${priceNum.toStringAsFixed(2)}",
+                    style: TextStyle(fontSize: 15),
+                  ),
                   trailing: IconButton(
                     onPressed: () {
                       deletefavorite(docs[index].id);
