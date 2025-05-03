@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stock_tracker/screens/login.dart';
+import 'price_chart.dart';
 import 'stockhandling.dart';
 import 'watchlist.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'news_feed.dart';
 
 class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -58,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
       final price = await getprice(symbol);
       setState(() {
         stocksymbol = symbol;
-        stockprice = price != null ? "\$$price" : "Not Found";
+        stockprice = "\$$price";
       });
     } catch (e) {
       setState(() {
@@ -163,11 +167,46 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 SizedBox(width: 10),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
-                    );
+                  onPressed: () async {
+                    if (stocksymbol != null) {
+                      try {
+                        final data = await getRecommendationData(stocksymbol!);
+                        final latest =
+                            data.first; // most recent recommendation period
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => Scaffold(
+                                  appBar: AppBar(
+                                    title: Text(
+                                      "$stocksymbol Recommendation Trends",
+                                    ),
+                                  ),
+                                  body: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: RecommendationChart(latest: latest),
+                                  ),
+                                ),
+                          ),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "Failed to load recommendation trends",
+                            ),
+                          ),
+                        );
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Please search for a stock first"),
+                        ),
+                      );
+                    }
                   },
                   icon: Icon(Icons.bar_chart, color: Colors.lightGreen[600]),
                   label: Text("Charts"),
@@ -190,7 +229,7 @@ class _MainScreenState extends State<MainScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      MaterialPageRoute(builder: (context) => NewsFeedScreen()),
                     );
                   },
                   icon: Icon(
@@ -305,10 +344,55 @@ class _MainScreenState extends State<MainScreen> {
                     stockprice!,
                     style: TextStyle(fontSize: 15, color: Colors.grey[600]),
                   ),
-                  trailing: ElevatedButton.icon(
-                    label: Text("Add to Watchlist"),
-                    onPressed: addtowatchlist,
-                    icon: Icon(Icons.add_circle_outline, color: Colors.green),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton.icon(
+                        label: Text("Add to Watchlist"),
+                        onPressed: addtowatchlist,
+                        icon: Icon(
+                          Icons.add_circle_outline,
+                          color: Colors.green,
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          try {
+                            final data = await getRecommendationData(
+                              stocksymbol!,
+                            );
+                            final latest =
+                                data.first; // most recent recommendation period
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => Scaffold(
+                                      appBar: AppBar(
+                                        title: Text(
+                                          "$stocksymbol Price History",
+                                        ),
+                                      ),
+                                      body: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: RecommendationChart(
+                                          latest: latest,
+                                        ),
+                                      ),
+                                    ),
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Failed to load chart data"),
+                              ),
+                            );
+                          }
+                        },
+                        child: Text("View Chart"),
+                      ),
+                    ],
                   ),
                 ),
               ),

@@ -6,6 +6,8 @@ import 'dart:async';
 import 'package:stock_tracker/screens/stockhandling.dart';
 
 class WatchlistScreen extends StatefulWidget {
+  const WatchlistScreen({super.key});
+
   @override
   _WatchlistScreenState createState() => _WatchlistScreenState();
 }
