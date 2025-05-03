@@ -29,29 +29,17 @@ Future<double> getprice(String symbol) async {
   }
 }
 
-Future<List<Map<String, dynamic>>> getHistoricalData(String symbol) async {
-  final url = Uri.parse(
-    'https://finnhub.io/api/v1/stock/candle?symbol=$symbol&resolution=D&from=1680307200&to=1682899200&token=$api',
-  );
-  final response = await http.get(url);
+Future<List<Map<String, dynamic>>> getRecommendationData(String symbol) async {
+  final apiKey = 'd0b5ejhr01qo0h63f5l0d0b5ejhr01qo0h63f5lg';
+  final url =
+      'https://finnhub.io/api/v1/stock/recommendation?symbol=$symbol&token=$apiKey';
+
+  final response = await http.get(Uri.parse(url));
 
   if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    if (data['s'] == 'ok') {
-      final timestamps = data['t'] as List<dynamic>;
-      final prices = data['c'] as List<dynamic>;
-
-      return List.generate(
-        timestamps.length,
-        (index) => {
-          'time': DateTime.fromMillisecondsSinceEpoch(timestamps[index] * 1000),
-          'price': prices[index],
-        },
-      );
-    } else {
-      throw Exception('No data available');
-    }
+    final List<dynamic> jsonData = jsonDecode(response.body);
+    return jsonData.cast<Map<String, dynamic>>();
   } else {
-    throw Exception('API Handling Error');
+    throw Exception('Failed to load recommendation data');
   }
 }
