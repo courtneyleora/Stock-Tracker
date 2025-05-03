@@ -13,6 +13,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final User? user = FirebaseAuth.instance.currentUser;
   final TextEditingController search = TextEditingController();
+  final List<String> categories = ['Tech', 'Crypto', 'Finance', 'Energy'];
+  String? selectedcat;
 
   String? stocksymbol;
   String? stockprice;
@@ -70,7 +72,11 @@ class _MainScreenState extends State<MainScreen> {
             .collection('watchlist')
             .doc(stocksymbol);
 
-        await docRef.set({'symbol': stocksymbol, 'price': stockprice});
+        await docRef.set({
+          'symbol': stocksymbol,
+          'price': stockprice,
+          'category': selectedcat ?? 'Uncategorized',
+        });
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Added $stocksymbol to favorites")),
@@ -237,6 +243,29 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
             SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                labelText: "Select category",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              value: selectedcat,
+              items:
+                  categories.map((category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedcat = value;
+                });
+              },
+            ),
             if (stockprice == null && error == null)
               Padding(
                 padding: const EdgeInsets.only(top: 40),
