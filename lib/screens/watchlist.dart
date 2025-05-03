@@ -70,7 +70,10 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Your Watchlist"),
+        title: Text(
+          "Your Watchlist",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.lightGreen[300],
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -85,38 +88,79 @@ class _WatchlistScreenState extends State<WatchlistScreen> {
             return Center(child: Text('No favorites yet!'));
           }
           final docs = snapshot.data!.docs;
-          return ListView.builder(
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              final data = docs[index].data() as Map<String, dynamic>;
-              final symbol = data['symbol'];
-              final rawPrice = data['price'];
-              final priceStr = rawPrice.toString().replaceAll('\$', '');
-              final priceNum = double.tryParse(priceStr) ?? 0.0;
+          final Map<String, List<QueryDocumentSnapshot>> categorized = {};
 
-              return Card(
-                margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ListTile(
-                  title: Text(
-                    symbol,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
-                  subtitle: Text(
-                    "\$${priceNum.toStringAsFixed(2)}",
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  trailing: IconButton(
-                    onPressed: () {
-                      deletefavorite(docs[index].id);
-                    },
-                    icon: Icon(Icons.delete),
-                  ),
-                ),
-              );
-            },
+          for (var doc in docs) {
+            final data = doc.data() as Map<String, dynamic>;
+            final category = data['category'] ?? 'Uncategorized';
+            categorized.putIfAbsent(category, () => []).add(doc);
+          }
+
+          return ListView(
+            children:
+                categorized.entries.map((entry) {
+                  final category = entry.key;
+                  final stocks = entry.value;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        child: Text(
+                          category,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green[700],
+                          ),
+                        ),
+                      ),
+                      ...stocks.map((doc) {
+                        final data = doc.data() as Map<String, dynamic>;
+                        final symbol = data['symbol'];
+                        final rawPrice = data['price'];
+                        final priceStr = rawPrice.toString().replaceAll(
+                          '\$',
+                          '',
+                        );
+                        final priceNum = double.tryParse(priceStr) ?? 0.0;
+
+                        return Card(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListTile(
+                            title: Text(
+                              symbol,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                            subtitle: Text(
+                              "\$${priceNum.toStringAsFixed(2)}",
+                              style: TextStyle(fontSize: 15),
+                            ),
+                            trailing: IconButton(
+                              onPressed: () {
+                                deletefavorite(doc.id);
+                              },
+                              icon: Icon(Icons.delete),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                  );
+                }).toList(),
           );
         },
       ),
