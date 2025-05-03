@@ -89,10 +89,32 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.lightGreen[300],
-        title: Text(
-          "Welcome, $displayName!",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        title: Row(
+          children: [
+            Icon(Icons.account_circle, color: Colors.white),
+            SizedBox(width: 10),
+            Text(
+              "Welcome, $displayName!",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout, color: Colors.white),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -215,6 +237,21 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
             SizedBox(height: 16),
+            if (stockprice == null && error == null)
+              Padding(
+                padding: const EdgeInsets.only(top: 40),
+                child: Center(
+                  child: Text(
+                    "Search for a stock to get started!",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[700],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
             if (error != null)
               Text(error!, style: TextStyle(color: Colors.red)),
             if (stockprice != null)
