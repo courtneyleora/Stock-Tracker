@@ -13,7 +13,12 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final User? user = FirebaseAuth.instance.currentUser;
   final TextEditingController search = TextEditingController();
-  final List<String> categories = ['Tech', 'Crypto', 'Finance', 'Energy'];
+  final List<String> categories = [
+    'Tech 📱',
+    'Crypto 💸',
+    'Finance 💰',
+    'Energy 💡',
+  ];
   String? selectedcat;
 
   String? stocksymbol;
@@ -301,7 +306,7 @@ class _MainScreenState extends State<MainScreen> {
                     style: TextStyle(fontSize: 15, color: Colors.grey[600]),
                   ),
                   trailing: ElevatedButton.icon(
-                    label: Text("Add Stock"),
+                    label: Text("Add to Watchlist"),
                     onPressed: addtowatchlist,
                     icon: Icon(Icons.add_circle_outline, color: Colors.green),
                   ),
