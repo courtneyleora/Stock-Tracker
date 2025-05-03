@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:stock_tracker/screens/login.dart';
 import 'price_chart.dart';
 import 'stockhandling.dart';
 import 'watchlist.dart';
