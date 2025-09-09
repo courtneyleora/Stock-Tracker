@@ -54,3 +54,7 @@ A cross-platform mobile app built with Flutter for tracking stocks, viewing pric
   - `firebase_options.dart` - Firebase configuration
 - `android/` and `ios/` - Platform-specific files
 - `pubspec.yaml` - Dependencies
+
+
+https://github.com/user-attachments/assets/e1b8ed18-e7f1-41ca-ba22-7d8b75af7853
+
